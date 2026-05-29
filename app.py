@@ -285,7 +285,7 @@ def inject_css():
         border: 1px solid #E5E7EB !important;
         background-color: #FFFFFF !important;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-        padding: 20px 22px !important;
+        padding: 60px 62px !important;
         transition: all 0.25s ease;
     }
     [data-testid="stVerticalBlockBorderWrapper"]:hover {
