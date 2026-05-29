@@ -583,7 +583,7 @@ def inject_css():
     /* Wrapper card untuk Komposisi Polutan & Hasil Prediksi */
     .sim-card {
         background: #FFFFFF;
-        border-radius: 100px;
+        border-radius: 20px;
         padding: 26px 28px;
         border: 1px solid #E5E7EB;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04),
@@ -2434,115 +2434,114 @@ def page_simulasi(data):
 
     # ─────────── KIRI: Card "Komposisi Polutan" ───────────
     with col_left:
-        st.markdown('<div class="sim-card">', unsafe_allow_html=True)
+        with st.container(border=True):
 
-        # Header card: icon + title + desc
-        st.markdown(
-            """
-            <div class='sim-card-header'>
-                <div class='sim-card-icon'>⚗</div>
-                <div style='flex:1;'>
-                    <div class='sim-card-title'>Komposisi Polutan</div>
-                    <div class='sim-card-desc'>
-                        Atur konsentrasi setiap polutan untuk mensimulasikan kualitas udara.
+            # Header card: icon + title + desc
+            st.markdown(
+                """
+                <div class='sim-card-header'>
+                    <div class='sim-card-icon'>⚗</div>
+                    <div style='flex:1;'>
+                        <div class='sim-card-title'>Komposisi Polutan</div>
+                        <div class='sim-card-desc'>
+                            Atur konsentrasi setiap polutan untuk mensimulasikan kualitas udara.
+                        </div>
                     </div>
                 </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # ── Preset Skenario ──
-        st.markdown(
-            "<div class='sim-section-label'>Preset Skenario</div>",
-            unsafe_allow_html=True,
-        )
-
-        preset_labels = {
-            "Baik":               ("Baik",        "ISPU 0–50"),
-            "Sedang":             ("Sedang",      "ISPU 51–100"),
-            "Tidak Sehat":        ("Tidak Sehat", "ISPU 101–200"),
-            "Sangat Tidak Sehat": ("Sangat",      "ISPU 201–300"),
-            "Berbahaya":          ("Berbahaya",   "ISPU ≥ 301"),
-        }
-        current_active = st.session_state.get("sim_active_preset")
-        pc = st.columns(5, gap="small")
-        for col, (name, (label, tip)) in zip(pc, preset_labels.items()):
-            with col:
-                # Marker class: warna kategori + state active/idle
-                cat_suffix = preset_css_suffix[name]
-                active_mod = " active" if current_active == name else ""
-                st.markdown(
-                    f'<div class="pmkr pmkr-{cat_suffix}{active_mod}"></div>',
-                    unsafe_allow_html=True,
-                )
-                st.button(
-                    label, key=f"preset_{cat_suffix}",
-                    use_container_width=True, help=f"Kualitas udara {name} ({tip})",
-                    on_click=apply_preset, args=(name,),
-                )
-
-        # ── Model Klasifikasi ──
-        st.markdown(
-            "<div style='margin-top:18px;'></div>"
-            "<div class='sim-section-label'>Model Klasifikasi</div>",
-            unsafe_allow_html=True,
-        )
-        model_label = st.selectbox(
-            "Model Klasifikasi",
-            ["XGBoost (Rekomendasi)", "Random Forest", "SVM"],
-            label_visibility="collapsed",
-            help="XGBoost direkomendasikan karena akurasi tertinggi pada data uji.",
-            key="sim_model_label",
-        )
-        model_choice_map = {
-            "XGBoost (Rekomendasi)": "xgboost",
-            "Random Forest": "random_forest",
-            "SVM": "svm",
-        }
-        st.session_state["sim_model_choice"] = model_choice_map[model_label]
-
-        # ── Sliders 6 polutan dalam 2 kolom ──
-        st.markdown(
-            "<div style='margin-top:19px;'></div>"
-            "<div class='sim-section-label'>Konsentrasi Polutan</div>",
-            unsafe_allow_html=True,
-        )
-        sc1, sc2 = st.columns(2, gap="medium")
-        vals = {}
-        with sc1:
-            vals["pm25"] = _polutan_slider_block("pm25")
-            vals["no2"]  = _polutan_slider_block("no2")
-            vals["co"]   = _polutan_slider_block("co")
-        with sc2:
-            vals["pm10"] = _polutan_slider_block("pm10")
-            vals["so2"]  = _polutan_slider_block("so2")
-            vals["o3"]   = _polutan_slider_block("o3")
-
-        # Sinkron 2-arah preset↔slider
-        detected = _detect_active_preset(vals)
-        if detected != st.session_state.get("sim_active_preset"):
-            st.session_state["sim_active_preset"] = detected
-
-        # ── Tombol Info & Reset di footer card ──
-        st.markdown(
-            "<div style='border-top:1px solid #F1F5F9; margin-top:19px; padding-top:16px;'></div>",
-            unsafe_allow_html=True,
-        )
-        bc1, bc2, _bc3 = st.columns([1.4, 1.2, 2])
-        with bc1:
-            st.markdown('<div class="reset-marker"></div>', unsafe_allow_html=True)
-            st.button(
-                "↺ Reset Semua", key="btn_reset",
-                type="secondary", use_container_width=True,
-                on_click=reset_simulation,
-                help="Kembalikan semua slider ke 0 & hapus preset aktif.",
+                """,
+                unsafe_allow_html=True,
             )
-        with bc2:
-            if st.button("ⓘ Info Polutan", key="btn_info_simulasi", use_container_width=True):
-                render_popup_polutan()
 
-        st.markdown('</div>', unsafe_allow_html=True)  # /sim-card
+            # ── Preset Skenario ──
+            st.markdown(
+                "<div class='sim-section-label'>Preset Skenario</div>",
+                unsafe_allow_html=True,
+            )
+
+            preset_labels = {
+                "Baik":               ("Baik",        "ISPU 0–50"),
+                "Sedang":             ("Sedang",      "ISPU 51–100"),
+                "Tidak Sehat":        ("Tidak Sehat", "ISPU 101–200"),
+                "Sangat Tidak Sehat": ("Sangat",      "ISPU 201–300"),
+                "Berbahaya":          ("Berbahaya",   "ISPU ≥ 301"),
+            }
+            current_active = st.session_state.get("sim_active_preset")
+            pc = st.columns(5, gap="small")
+            for col, (name, (label, tip)) in zip(pc, preset_labels.items()):
+                with col:
+                    # Marker class: warna kategori + state active/idle
+                    cat_suffix = preset_css_suffix[name]
+                    active_mod = " active" if current_active == name else ""
+                    st.markdown(
+                        f'<div class="pmkr pmkr-{cat_suffix}{active_mod}"></div>',
+                        unsafe_allow_html=True,
+                    )
+                    st.button(
+                        label, key=f"preset_{cat_suffix}",
+                        use_container_width=True, help=f"Kualitas udara {name} ({tip})",
+                        on_click=apply_preset, args=(name,),
+                    )
+
+            # ── Model Klasifikasi ──
+            st.markdown(
+                "<div style='margin-top:18px;'></div>"
+                "<div class='sim-section-label'>Model Klasifikasi</div>",
+                unsafe_allow_html=True,
+            )
+            model_label = st.selectbox(
+                "Model Klasifikasi",
+                ["XGBoost (Rekomendasi)", "Random Forest", "SVM"],
+                label_visibility="collapsed",
+                help="XGBoost direkomendasikan karena akurasi tertinggi pada data uji.",
+                key="sim_model_label",
+            )
+            model_choice_map = {
+                "XGBoost (Rekomendasi)": "xgboost",
+                "Random Forest": "random_forest",
+                "SVM": "svm",
+            }
+            st.session_state["sim_model_choice"] = model_choice_map[model_label]
+
+            # ── Sliders 6 polutan dalam 2 kolom ──
+            st.markdown(
+                "<div style='margin-top:19px;'></div>"
+                "<div class='sim-section-label'>Konsentrasi Polutan</div>",
+                unsafe_allow_html=True,
+            )
+            sc1, sc2 = st.columns(2, gap="medium")
+            vals = {}
+            with sc1:
+                vals["pm25"] = _polutan_slider_block("pm25")
+                vals["no2"]  = _polutan_slider_block("no2")
+                vals["co"]   = _polutan_slider_block("co")
+            with sc2:
+                vals["pm10"] = _polutan_slider_block("pm10")
+                vals["so2"]  = _polutan_slider_block("so2")
+                vals["o3"]   = _polutan_slider_block("o3")
+
+            # Sinkron 2-arah preset↔slider
+            detected = _detect_active_preset(vals)
+            if detected != st.session_state.get("sim_active_preset"):
+                st.session_state["sim_active_preset"] = detected
+
+            # ── Tombol Info & Reset di footer card ──
+            st.markdown(
+                "<div style='border-top:1px solid #F1F5F9; margin-top:19px; padding-top:16px;'></div>",
+                unsafe_allow_html=True,
+            )
+            bc1, bc2, _bc3 = st.columns([1.4, 1.2, 2])
+            with bc1:
+                st.markdown('<div class="reset-marker"></div>', unsafe_allow_html=True)
+                st.button(
+                    "↺ Reset Semua", key="btn_reset",
+                    type="secondary", use_container_width=True,
+                    on_click=reset_simulation,
+                    help="Kembalikan semua slider ke 0 & hapus preset aktif.",
+                )
+            with bc2:
+                if st.button("ⓘ Info Polutan", key="btn_info_simulasi", use_container_width=True):
+                    render_popup_polutan()
+
 
     # ─────────── KANAN: Card "Hasil Prediksi ISPU" ───────────
     with col_right:
@@ -2581,140 +2580,139 @@ def page_simulasi(data):
         else:
             status_bg, status_color = info["warna_bg"], info["warna"]
 
-        st.markdown('<div class="sim-card">', unsafe_allow_html=True)
+        with st.container(border=True):
 
-        # Header card
-        st.markdown(
-            """
-            <div class='sim-card-header'>
-                <div class='sim-card-icon icon-result'>📊</div>
-                <div style='flex:1;'>
-                    <div class='sim-card-title'>Hasil Prediksi ISPU</div>
-                    <div class='sim-card-desc'>
-                        Hasil klasifikasi kualitas udara diperbarui secara real-time.
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Badge preset aktif
-        active_name = st.session_state.get("sim_active_preset")
-        if active_name:
+            # Header card
             st.markdown(
-                f"<div class='active-preset-badge'><span class='dot'></span>"
-                f"Preset aktif: <strong>{active_name}</strong></div>",
-                unsafe_allow_html=True,
-            )
-
-        # Hero result block (status pill + angka ISPU besar + deskripsi)
-        st.markdown(
-            f"""
-            <div class='hero-result sim-fade'>
-                <div class='hero-status-pill'
-                     style='background:{status_bg}; color:{status_color};'>
-                    <span class='hero-emoji-inline'>{info["emoji"]}</span>
-                    {status_text}
-                </div>
-                <div class='hero-result-num' style='color:{info["warna"]};'>
-                    {nilai_ispu:.0f}
-                </div>
-                <div class='hero-result-label'>Indeks Standar Pencemar Udara</div>
-                <div class='hero-result-desc'>{deskripsi_text}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Rekomendasi modern box
-        st.markdown(
-            f"""
-            <div class='rekom-modern sim-fade'
-                 style='background:{info["warna_bg"]};
-                        border-color:{info["warna"]}40;'>
-                <div class='rekom-modern-icon'
-                     style='background:{info["warna"]}; color:#FFFFFF;'>ⓘ</div>
-                <div style='flex:1;'>
-                    <div class='rekom-modern-title' style='color:{info["warna"]};'>
-                        Rekomendasi Aktivitas
-                    </div>
-                    <div class='rekom-modern-text'>{rekom_text}</div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # ── Sub-Indeks per Polutan dengan progress bars ──
-        rows_html = ""
-        for pol, sub_val in sorted(subindeks.items(), key=lambda kv: -kv[1]):
-            is_dom = (not is_neutral) and (pol == polutan_dominan)
-            sub_kategori = get_ispu_category(sub_val)
-            sub_info = KATEGORI_INFO[sub_kategori]
-            sub_warna = sub_info["warna"]
-            sub_warna_bg = sub_info["warna_bg"]
-            # Progress bar width (0-500 scale)
-            bar_pct = min(100.0, (sub_val / 500.0) * 100.0)
-            # CSS class & badge
-            dom_cls = " dominan" if is_dom else ""
-            dom_badge = (
-                "<span class='dom-badge' title='Polutan dominan'>⚠ DOMINAN</span>"
-                if is_dom else ""
-            )
-            if is_neutral:
-                kat_pill = ""
-            else:
-                kat_pill = (
-                    f"<span class='kat-pill' style='background:{sub_warna_bg}; "
-                    f"color:{sub_warna}; border-color:{sub_warna}30;'>"
-                    f"{sub_kategori}</span>"
-                )
-            rows_html += (
-                f"<div class='subindex-bar-card{dom_cls}'>"
-                f"  <div class='subindex-bar-head'>"
-                f"    <span class='subindex-bar-name'>{POLUTAN_DISPLAY_NAME[pol]}{dom_badge}</span>"
-                f"    <span class='subindex-bar-val'>{sub_val:.1f}</span>"
-                f"  </div>"
-                f"  <div class='subindex-bar-track'>"
-                f"    <div class='subindex-bar-fill' "
-                f"         style='width:{bar_pct:.1f}%; background:{sub_warna};'></div>"
-                f"  </div>"
-                f"  <div class='subindex-bar-foot'>{kat_pill}</div>"
-                f"</div>"
-            )
-
-        st.markdown(
-            f"""
-            <div class='subindex-section sim-fade'>
-                <div class='subindex-section-title'>
-                    <span>Sub-Indeks per Polutan</span>
-                    <span class='subindex-section-hint'>skala 0 — 500</span>
-                </div>
-                {rows_html}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Pembanding klasifikasi Model ML
-        if ml_kategori is not None and not is_neutral:
-            conf_txt = f" (keyakinan {ml_confidence*100:.1f}%)" if ml_confidence is not None else ""
-            st.markdown(
-                f"""
-                <div class='info-box' style='margin-top:16px;'>
-                    <div class='info-box-icon'>ⓘ</div>
-                    <div class='info-box-text'>
-                        ISPU dihitung dengan formula sub-indeks PerMenLHK 14/2020.<br>
-                        Klasifikasi model <strong>{ml_model_used}</strong>:
-                        <strong>{ml_kategori}</strong>{conf_txt}.
+                """
+                <div class='sim-card-header'>
+                    <div class='sim-card-icon icon-result'>📊</div>
+                    <div style='flex:1;'>
+                        <div class='sim-card-title'>Hasil Prediksi ISPU</div>
+                        <div class='sim-card-desc'>
+                            Hasil klasifikasi kualitas udara diperbarui secara real-time.
+                        </div>
                     </div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
-        st.markdown('</div>', unsafe_allow_html=True)  # /sim-card
+            # Badge preset aktif
+            active_name = st.session_state.get("sim_active_preset")
+            if active_name:
+                st.markdown(
+                    f"<div class='active-preset-badge'><span class='dot'></span>"
+                    f"Preset aktif: <strong>{active_name}</strong></div>",
+                    unsafe_allow_html=True,
+                )
+
+            # Hero result block (status pill + angka ISPU besar + deskripsi)
+            st.markdown(
+                f"""
+                <div class='hero-result sim-fade'>
+                    <div class='hero-status-pill'
+                         style='background:{status_bg}; color:{status_color};'>
+                        <span class='hero-emoji-inline'>{info["emoji"]}</span>
+                        {status_text}
+                    </div>
+                    <div class='hero-result-num' style='color:{info["warna"]};'>
+                        {nilai_ispu:.0f}
+                    </div>
+                    <div class='hero-result-label'>Indeks Standar Pencemar Udara</div>
+                    <div class='hero-result-desc'>{deskripsi_text}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # Rekomendasi modern box
+            st.markdown(
+                f"""
+                <div class='rekom-modern sim-fade'
+                     style='background:{info["warna_bg"]};
+                            border-color:{info["warna"]}40;'>
+                    <div class='rekom-modern-icon'
+                         style='background:{info["warna"]}; color:#FFFFFF;'>ⓘ</div>
+                    <div style='flex:1;'>
+                        <div class='rekom-modern-title' style='color:{info["warna"]};'>
+                            Rekomendasi Aktivitas
+                        </div>
+                        <div class='rekom-modern-text'>{rekom_text}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # ── Sub-Indeks per Polutan dengan progress bars ──
+            rows_html = ""
+            for pol, sub_val in sorted(subindeks.items(), key=lambda kv: -kv[1]):
+                is_dom = (not is_neutral) and (pol == polutan_dominan)
+                sub_kategori = get_ispu_category(sub_val)
+                sub_info = KATEGORI_INFO[sub_kategori]
+                sub_warna = sub_info["warna"]
+                sub_warna_bg = sub_info["warna_bg"]
+                # Progress bar width (0-500 scale)
+                bar_pct = min(100.0, (sub_val / 500.0) * 100.0)
+                # CSS class & badge
+                dom_cls = " dominan" if is_dom else ""
+                dom_badge = (
+                    "<span class='dom-badge' title='Polutan dominan'>⚠ DOMINAN</span>"
+                    if is_dom else ""
+                )
+                if is_neutral:
+                    kat_pill = ""
+                else:
+                    kat_pill = (
+                        f"<span class='kat-pill' style='background:{sub_warna_bg}; "
+                        f"color:{sub_warna}; border-color:{sub_warna}30;'>"
+                        f"{sub_kategori}</span>"
+                    )
+                rows_html += (
+                    f"<div class='subindex-bar-card{dom_cls}'>"
+                    f"  <div class='subindex-bar-head'>"
+                    f"    <span class='subindex-bar-name'>{POLUTAN_DISPLAY_NAME[pol]}{dom_badge}</span>"
+                    f"    <span class='subindex-bar-val'>{sub_val:.1f}</span>"
+                    f"  </div>"
+                    f"  <div class='subindex-bar-track'>"
+                    f"    <div class='subindex-bar-fill' "
+                    f"         style='width:{bar_pct:.1f}%; background:{sub_warna};'></div>"
+                    f"  </div>"
+                    f"  <div class='subindex-bar-foot'>{kat_pill}</div>"
+                    f"</div>"
+                )
+
+            st.markdown(
+                f"""
+                <div class='subindex-section sim-fade'>
+                    <div class='subindex-section-title'>
+                        <span>Sub-Indeks per Polutan</span>
+                        <span class='subindex-section-hint'>skala 0 — 500</span>
+                    </div>
+                    {rows_html}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # Pembanding klasifikasi Model ML
+            if ml_kategori is not None and not is_neutral:
+                conf_txt = f" (keyakinan {ml_confidence*100:.1f}%)" if ml_confidence is not None else ""
+                st.markdown(
+                    f"""
+                    <div class='info-box' style='margin-top:16px;'>
+                        <div class='info-box-icon'>ⓘ</div>
+                        <div class='info-box-text'>
+                            ISPU dihitung dengan formula sub-indeks PerMenLHK 14/2020.<br>
+                            Klasifikasi model <strong>{ml_model_used}</strong>:
+                            <strong>{ml_kategori}</strong>{conf_txt}.
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
 
 
 # ================================================================
