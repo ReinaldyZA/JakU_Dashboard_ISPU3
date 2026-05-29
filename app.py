@@ -583,7 +583,7 @@ def inject_css():
     /* Wrapper card untuk Komposisi Polutan & Hasil Prediksi */
     .sim-card {
         background: #FFFFFF;
-        border-radius: 20px;
+        border-radius: 100px;
         padding: 26px 28px;
         border: 1px solid #E5E7EB;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04),
